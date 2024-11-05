@@ -1,4 +1,5 @@
 import Utils
+import Configs as cfg
 
 pm = Utils.get_pyMeow()
 rq = Utils.get_requests()
@@ -101,20 +102,19 @@ class Esp:
         pm.overlay_init("Counter-Strike 2", fps=144)
         while pm.overlay_loop():
             view_matrix = pm.r_floats(self.proc, self.mod + Offsets.dwViewMatrix, 16)
+
             pm.begin_drawing()
-            pm.draw_fps(0, 0)
+            # pm.draw_fps(0, 0)
             for ent in self.it_entities():
                 if ent.wts(view_matrix) and ent.health > 0 and not ent.dormant:
                     color = Colors.cyan if ent.team != 2 else Colors.orange
                     head = ent.pos2d["y"] - ent.head_pos2d["y"]
                     width = head / 2
                     center = width / 2
-                    pm.draw_rectangle_lines(
-                        ent.head_pos2d["x"] - center,
-                        ent.head_pos2d["y"] - center / 2,
-                        width,
-                        head + center / 2,
-                        Colors.cyan,
-                        1.2,
-                    )
+
+                    if cfg.ESP.show_box:
+                        pm.draw_rectangle_lines(ent.head_pos2d["x"] - center, ent.head_pos2d["y"] - center / 2, width, head + center / 2, color, 1.2)
+                    if cfg.ESP.show_line:
+                        pm.draw_line(pm.get_screen_width() / 2, 0, ent.head_pos2d["x"], ent.head_pos2d["y"] - center / 2, Colors.white, 0.5)
+            
             pm.end_drawing()
