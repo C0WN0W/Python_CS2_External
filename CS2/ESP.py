@@ -10,6 +10,7 @@ class Offsets:
 
 
 class Colors:
+    green = pm.get_color("#00FF00")
     orange = pm.fade_color(pm.get_color("#FFA500"), 0.3)
     black = pm.get_color("black")
     cyan = pm.fade_color(pm.get_color("#00F6F6"), 0.3)
@@ -58,6 +59,21 @@ class Entity:
             return False
         return True
 
+class Render:
+    def draw_health(max, current, PosX, PosY, width, height):
+        if cfg.ESP.show_health:
+            Proportion = current / max
+            Height = height * Proportion
+            offsetY = height * (max - current) / max
+
+            pm.draw_rectangle(PosX + 1, PosY + 1 + offsetY, width / 2, Height, Colors.green)
+            pm.draw_rectangle_lines(PosX, PosY, width, height, Colors.black)
+
+    def draw_box(PosX, PosY, width, height, color, filled_color):
+        if cfg.ESP.show_filled_box:
+            pm.draw_rectangle(PosX, PosY, width, height, filled_color)
+        if cfg.ESP.show_box:
+            pm.draw_rectangle_lines(PosX, PosY, width, height, color, 1.2)
 
 class Esp:
     def __init__(self):
@@ -111,12 +127,16 @@ class Esp:
                     head = ent.pos2d["y"] - ent.head_pos2d["y"]
                     width = head / 2
                     center = width / 2
+                    health = ent.head_pos2d["y"] - center / 2 + ent.health + 1
 
-                    if cfg.ESP.show_filled_box:
-                        pm.draw_rectangle(ent.head_pos2d["x"] - center, ent.head_pos2d["y"] - center / 2, width, head + center / 2, color)
-                    if cfg.ESP.show_box:
-                        pm.draw_rectangle_lines(ent.head_pos2d["x"] - center, ent.head_pos2d["y"] - center / 2, width, head + center / 2, Colors.white, 1.2)
                     if cfg.ESP.show_line:
                         pm.draw_line(pm.get_screen_width() / 2, 0, ent.head_pos2d["x"], ent.head_pos2d["y"] - center / 2, Colors.white, 0.5)
+                    
+                    Render.draw_box(ent.head_pos2d["x"] - center, ent.head_pos2d["y"] - center / 2, width, head + center / 2, Colors.white, color)
+                    Render.draw_health(100, ent.health, 
+                                        ent.head_pos2d["x"] + center + 2,
+                                        ent.head_pos2d["y"] - center / 2, 
+                                        4, 
+                                        head + center / 2)
             
             pm.end_drawing()

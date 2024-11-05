@@ -11,6 +11,7 @@ checkbox_config_map = {
     "Show Box": ("ESP", "show_box"),
     "Filled Box": ("ESP", "show_filled_box"), 
     "Show Line": ("ESP", "show_line"), 
+    "Show Health Bar": ("ESP", "show_health"),
     }
 
 def checkbox_callback(sender, app_data, user_data):
