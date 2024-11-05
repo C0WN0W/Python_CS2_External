@@ -46,6 +46,14 @@ class Entity:
     def dormant(self):
         return pm.r_bool(self.proc, self.pawn_ptr + Offsets.m_bDormant)
 
+    @property
+    def distance(self):
+        localPos = pm.r_vec3(self.proc, self.pawn_ptr + Offsets.m_vOldOrigin)
+        dx = self.pos["x"] - localPos["x"]
+        dy = self.pos["y"] - localPos["y"]
+        dz = self.pos["z"] - localPos["z"]
+        return (dx **2 + dy **2 + dz **2) **0.5
+
     def bone_pos(self, bone):
         game_scene = pm.r_int64(self.proc, self.pawn_ptr + Offsets.m_pGameSceneNode)
         bone_array_ptr = pm.r_int64(self.proc, game_scene + Offsets.m_pBoneArray)
@@ -74,6 +82,10 @@ class Render:
             pm.draw_rectangle(PosX, PosY, width, height, filled_color)
         if cfg.ESP.show_box:
             pm.draw_rectangle_lines(PosX, PosY, width, height, color, 1.2)
+    
+    def draw_distance(distance, PosX, PosY, Color):
+        if cfg.ESP.show_distance:
+            pm.draw_text(f"{distance}m", PosX, PosY, 18, Color)
 
 class Esp:
     def __init__(self):
@@ -139,6 +151,6 @@ class Esp:
                                         ent.head_pos2d["y"] - center / 2, 
                                         4, 
                                         head + center / 2)
-                    # pm.w_int(self.proc, ent.pawn_ptr + Offsets.m_flFlashDuration, 0)
+                    Render.draw_distance(ent.distance, ent.head_pos2d["x"] + center + 8, ent.head_pos2d["y"] - center / 2, pm.get_color("#00FFFF"))
                     
             pm.end_drawing()

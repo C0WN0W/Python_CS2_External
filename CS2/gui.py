@@ -12,6 +12,7 @@ checkbox_config_map1 = {
     "Filled Box": ("ESP", "show_filled_box"), 
     "Show Line": ("ESP", "show_line"), 
     "Show Health Bar": ("ESP", "show_health"),
+    "Show Distance": ("ESP", "show_distance"),
     }
 
 checkbox_config_map2 = {
