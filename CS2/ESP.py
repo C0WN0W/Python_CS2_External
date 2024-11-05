@@ -93,6 +93,7 @@ class Esp:
             "m_vOldOrigin": "C_BasePlayerPawn",
             "m_pGameSceneNode": "C_BaseEntity",
             "m_bDormant": "CGameSceneNode",
+            "m_flFlashDuration": "C_CSPlayerPawnBase"
         }
         clientDll = rq.get("https://raw.githubusercontent.com/a2x/cs2-dumper/main/output/client_dll.json").json()
         [setattr(Offsets, k, clientDll["client.dll"]["classes"][client_dll_name[k]]["fields"][k]) for k in client_dll_name]
@@ -138,5 +139,6 @@ class Esp:
                                         ent.head_pos2d["y"] - center / 2, 
                                         4, 
                                         head + center / 2)
-            
+                    # pm.w_int(self.proc, ent.pawn_ptr + Offsets.m_flFlashDuration, 0)
+                    
             pm.end_drawing()

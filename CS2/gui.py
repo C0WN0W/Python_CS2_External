@@ -7,11 +7,15 @@ from dearpygui.dearpygui import add_checkbox, add_text, add_combo, add_input_tex
 GUI_WIDTH = 340
 GUI_HEIGHT = 420
 
-checkbox_config_map = {
+checkbox_config_map1 = {
     "Show Box": ("ESP", "show_box"),
     "Filled Box": ("ESP", "show_filled_box"), 
     "Show Line": ("ESP", "show_line"), 
     "Show Health Bar": ("ESP", "show_health"),
+    }
+
+checkbox_config_map2 = {
+    "No Flash": ("MISC", "no_flash"),
     }
 
 def checkbox_callback(sender, app_data, user_data):
@@ -23,10 +27,14 @@ def render():
     with window(label="", width=GUI_WIDTH, height=GUI_HEIGHT, no_move=True, no_resize=True, no_title_bar=True, tag="Primary Window"):
         with tab_bar():
             with tab(label="ESP"):
-                for label, (class_name, attr_name) in checkbox_config_map.items():
+                for label, (class_name, attr_name) in checkbox_config_map1.items():
                     initial_value = getattr(getattr(cfg, class_name), attr_name)
                     add_checkbox(label=label, default_value=initial_value, callback=checkbox_callback, user_data=(class_name, attr_name))
-                
+            with tab(label="Misc"):
+                for label, (class_name, attr_name) in checkbox_config_map2.items():
+                    initial_value = getattr(getattr(cfg, class_name), attr_name)
+                    add_checkbox(label=label, default_value=initial_value, callback=checkbox_callback, user_data=(class_name, attr_name))
+        
     create_viewport(title="CS2", width=GUI_WIDTH, height=GUI_HEIGHT, x_pos=0, y_pos=0, resizable=False)
     setup_dearpygui()
     show_viewport()
