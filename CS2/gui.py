@@ -8,7 +8,8 @@ GUI_WIDTH = 340
 GUI_HEIGHT = 420
 
 checkbox_config_map = {
-    "Show Box": ("ESP", "show_box"), 
+    "Show Box": ("ESP", "show_box"),
+    "Filled Box": ("ESP", "show_filled_box"), 
     "Show Line": ("ESP", "show_line"), 
     }
 

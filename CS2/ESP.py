@@ -10,9 +10,9 @@ class Offsets:
 
 
 class Colors:
-    orange = pm.get_color("orange")
+    orange = pm.fade_color(pm.get_color("#FFA500"), 0.3)
     black = pm.get_color("black")
-    cyan = pm.get_color("cyan")
+    cyan = pm.fade_color(pm.get_color("#00F6F6"), 0.3)
     white = pm.get_color("white")
     grey = pm.fade_color(pm.get_color("#242625"), 0.7)
 
@@ -104,7 +104,7 @@ class Esp:
             view_matrix = pm.r_floats(self.proc, self.mod + Offsets.dwViewMatrix, 16)
 
             pm.begin_drawing()
-            # pm.draw_fps(0, 0)
+            pm.draw_fps(0, 0)
             for ent in self.it_entities():
                 if ent.wts(view_matrix) and ent.health > 0 and not ent.dormant:
                     color = Colors.cyan if ent.team != 2 else Colors.orange
@@ -112,8 +112,10 @@ class Esp:
                     width = head / 2
                     center = width / 2
 
+                    if cfg.ESP.show_filled_box:
+                        pm.draw_rectangle(ent.head_pos2d["x"] - center, ent.head_pos2d["y"] - center / 2, width, head + center / 2, color)
                     if cfg.ESP.show_box:
-                        pm.draw_rectangle_lines(ent.head_pos2d["x"] - center, ent.head_pos2d["y"] - center / 2, width, head + center / 2, color, 1.2)
+                        pm.draw_rectangle_lines(ent.head_pos2d["x"] - center, ent.head_pos2d["y"] - center / 2, width, head + center / 2, Colors.white, 1.2)
                     if cfg.ESP.show_line:
                         pm.draw_line(pm.get_screen_width() / 2, 0, ent.head_pos2d["x"], ent.head_pos2d["y"] - center / 2, Colors.white, 0.5)
             
