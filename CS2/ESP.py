@@ -6,6 +6,52 @@ import Configs as cfg
 pm = Utils.get_pyMeow()
 rq = Utils.get_requests()
 
+weapon_names = { 
+        1: "deagle", 
+        2: "elite", 
+        3: "fiveseven", 
+        4: "glock", 
+        7: "ak47", 
+        8: "aug", 
+        9: "awp", 
+        10: "famas", 
+        11: "g3Sg1", 
+        13: "galilar", 
+        14: "m249", 
+        17: "mac10", 
+        19: "p90", 
+        23: "mp5sd", 
+        24: "ump45", 
+        25: "xm1014", 
+        26: "bizon", 
+        27: "mag7", 
+        28: "negev", 
+        29: "sawedoff", 
+        30: "tec9", 
+        31: "zeus", 
+        32: "p2000", 
+        33: "mp7", 
+        34: "mp9", 
+        35: "nova", 
+        36: "p250", 
+        38: "scar20", 
+        39: "sg556", 
+        40: "ssg08", 
+        42: "ct_knife", 
+        43: "flashbang", 
+        44: "hegrenade", 
+        45: "smokegrenade", 
+        46: "molotov", 
+        47: "decoy", 
+        48: "incgrenade", 
+        49: "c4", 
+        16: "m4a1", 
+        61: "usp", 
+        60: "m4a1_silencer", 
+        63: "cz75a", 
+        64: "revolver", 
+        59: "t_knife"
+    }
 
 class Offsets:
     m_pBoneArray = 496
@@ -21,6 +67,9 @@ class Colors:
 
 
 class Entity:
+
+    
+
     def __init__(self, ptr, pawn_ptr, proc):
         self.ptr = ptr
         self.pawn_ptr = pawn_ptr
@@ -48,6 +97,15 @@ class Entity:
     def dormant(self):
         return pm.r_bool(self.proc, self.pawn_ptr + Offsets.m_bDormant)
 
+    @property
+    def weaponIndex(self):
+        currentWeapon = pm.r_int(self.proc, self.pawn_ptr + Offsets.m_pClippingWeapon)
+        weaponIndex = pm.r_int(self.proc, currentWeapon + Offsets.m_AttributeManager + Offsets.m_Item + Offsets.m_iItemDefinitionIndex)
+        return weaponIndex
+    
+    def get_weapon_name(self):
+        return weapon_names.get(self.weaponIndex, "None")
+        
     def get_distance(self, localPos):
         dx = self.pos["x"] - localPos["x"]
         dy = self.pos["y"] - localPos["y"]
@@ -105,7 +163,11 @@ class Esp:
             "m_vOldOrigin": "C_BasePlayerPawn",
             "m_pGameSceneNode": "C_BaseEntity",
             "m_bDormant": "CGameSceneNode",
-            "m_flFlashDuration": "C_CSPlayerPawnBase"
+            "m_pClippingWeapon": "C_CSPlayerPawnBase",
+
+            "m_AttributeManager": "C_EconEntity",
+            "m_Item": "C_AttributeContainer",
+            "m_iItemDefinitionIndex": "C_EconItemView"
         }
         clientDll = rq.get("https://raw.githubusercontent.com/a2x/cs2-dumper/main/output/client_dll.json").json()
         [setattr(Offsets, k, clientDll["client.dll"]["classes"][client_dll_name[k]]["fields"][k]) for k in client_dll_name]
@@ -158,5 +220,4 @@ class Esp:
                     
                     distance = ent.get_distance(self.get_local_player_pos())
                     Render.draw_distance(distance, ent.head_pos2d["x"] + center + 8, ent.head_pos2d["y"] - center / 2, pm.get_color("#00FFFF"))
-                    
             pm.end_drawing()
