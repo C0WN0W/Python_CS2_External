@@ -99,7 +99,7 @@ class Entity:
 
     @property
     def weaponIndex(self):
-        currentWeapon = pm.r_int(self.proc, self.pawn_ptr + Offsets.m_pClippingWeapon)
+        currentWeapon = pm.r_int64(self.proc, self.pawn_ptr + Offsets.m_pClippingWeapon)
         weaponIndex = pm.r_int(self.proc, currentWeapon + Offsets.m_AttributeManager + Offsets.m_Item + Offsets.m_iItemDefinitionIndex)
         return weaponIndex
     
@@ -139,11 +139,18 @@ class Render:
         if cfg.ESP.show_filled_box:
             pm.draw_rectangle(PosX, PosY, width, height, filled_color)
         if cfg.ESP.show_box:
+            pm.draw_rectangle_lines(PosX + 1, PosY + 1, width, height, Colors.black, 1.2)   # Shadow
             pm.draw_rectangle_lines(PosX, PosY, width, height, color, 1.2)
     
     def draw_distance(distance, PosX, PosY, Color):
         if cfg.ESP.show_distance:
+            pm.draw_text(f"{distance}m", PosX + 1, PosY + 1, 15, Colors.black)  # Shadow
             pm.draw_text(f"{distance}m", PosX, PosY, 15, Color)
+
+    def draw_weapon(weaponName, PosX, PosY, Color):
+        if cfg.ESP.show_weapon:
+            pm.draw_text(f"{weaponName}", PosX + 1, PosY + 1, 15, Colors.black)  # Shadow
+            pm.draw_text(f"{weaponName}", PosX, PosY, 15, Color)
 
 class Esp:
     def __init__(self):
@@ -163,6 +170,7 @@ class Esp:
             "m_vOldOrigin": "C_BasePlayerPawn",
             "m_pGameSceneNode": "C_BaseEntity",
             "m_bDormant": "CGameSceneNode",
+            "m_flFlashDuration": "C_CSPlayerPawnBase",
             "m_pClippingWeapon": "C_CSPlayerPawnBase",
 
             "m_AttributeManager": "C_EconEntity",
@@ -189,9 +197,11 @@ class Esp:
 
             yield Entity(controller_ptr, pawn_ptr, self.proc)
 
+    def get_local_pawn(self):
+        return pm.r_int64(self.proc, self.mod + Offsets.dwLocalPlayerPawn)
+
     def get_local_player_pos(self):
-        local_player = pm.r_int64(self.proc, self.mod + Offsets.dwLocalPlayerPawn)
-        return pm.r_vec3(self.proc, local_player + Offsets.m_vOldOrigin)
+        return pm.r_vec3(self.proc, self.get_local_pawn() + Offsets.m_vOldOrigin)
     
     def run(self):
         pm.overlay_init("Counter-Strike 2", fps=144)
@@ -206,7 +216,6 @@ class Esp:
                     head = ent.pos2d["y"] - ent.head_pos2d["y"]
                     width = head / 2
                     center = width / 2
-                    health = ent.head_pos2d["y"] - center / 2 + ent.health + 1
 
                     if cfg.ESP.show_line:
                         pm.draw_line(pm.get_screen_width() / 2, 0, ent.head_pos2d["x"], ent.head_pos2d["y"] - center / 2, Colors.white, 0.5)
@@ -220,4 +229,5 @@ class Esp:
                     
                     distance = ent.get_distance(self.get_local_player_pos())
                     Render.draw_distance(distance, ent.head_pos2d["x"] + center + 8, ent.head_pos2d["y"] - center / 2, pm.get_color("#00FFFF"))
+                    Render.draw_weapon(ent.get_weapon_name(), ent.head_pos2d["x"] + center + 8, ent.head_pos2d["y"] - center / 2 + 15, pm.get_color("#FF7700"))
             pm.end_drawing()

@@ -4,6 +4,7 @@ class ESP:
     show_line = True
     show_health = True
     show_distance = False
+    show_weapon = False
 
 class MISC:
     no_flash = False
