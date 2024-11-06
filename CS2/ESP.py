@@ -218,6 +218,7 @@ class Esp:
                     center = width / 2
 
                     if cfg.ESP.show_line:
+                        pm.draw_line(pm.get_screen_width() / 2 + 1, 1, ent.head_pos2d["x"], ent.head_pos2d["y"] - center / 2, Colors.black, 0.5)
                         pm.draw_line(pm.get_screen_width() / 2, 0, ent.head_pos2d["x"], ent.head_pos2d["y"] - center / 2, Colors.white, 0.5)
                     
                     Render.draw_box(ent.head_pos2d["x"] - center, ent.head_pos2d["y"] - center / 2, width, head + center / 2, Colors.white, color)
