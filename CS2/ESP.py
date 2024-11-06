@@ -1,3 +1,5 @@
+import math
+
 import Utils
 import Configs as cfg
 
@@ -46,13 +48,11 @@ class Entity:
     def dormant(self):
         return pm.r_bool(self.proc, self.pawn_ptr + Offsets.m_bDormant)
 
-    @property
-    def distance(self):
-        localPos = pm.r_vec3(self.proc, self.pawn_ptr + Offsets.m_vOldOrigin)
+    def get_distance(self, localPos):
         dx = self.pos["x"] - localPos["x"]
         dy = self.pos["y"] - localPos["y"]
         dz = self.pos["z"] - localPos["z"]
-        return (dx **2 + dy **2 + dz **2) **0.5
+        return int(math.sqrt(dx * dx + dy * dy + dz * dz) / 100)
 
     def bone_pos(self, bone):
         game_scene = pm.r_int64(self.proc, self.pawn_ptr + Offsets.m_pGameSceneNode)
@@ -85,7 +85,7 @@ class Render:
     
     def draw_distance(distance, PosX, PosY, Color):
         if cfg.ESP.show_distance:
-            pm.draw_text(f"{distance}m", PosX, PosY, 18, Color)
+            pm.draw_text(f"{distance}m", PosX, PosY, 15, Color)
 
 class Esp:
     def __init__(self):
@@ -127,6 +127,10 @@ class Esp:
 
             yield Entity(controller_ptr, pawn_ptr, self.proc)
 
+    def get_local_player_pos(self):
+        local_player = pm.r_int64(self.proc, self.mod + Offsets.dwLocalPlayerPawn)
+        return pm.r_vec3(self.proc, local_player + Offsets.m_vOldOrigin)
+    
     def run(self):
         pm.overlay_init("Counter-Strike 2", fps=144)
         while pm.overlay_loop():
@@ -151,6 +155,8 @@ class Esp:
                                         ent.head_pos2d["y"] - center / 2, 
                                         4, 
                                         head + center / 2)
-                    Render.draw_distance(ent.distance, ent.head_pos2d["x"] + center + 8, ent.head_pos2d["y"] - center / 2, pm.get_color("#00FFFF"))
+                    
+                    distance = ent.get_distance(self.get_local_player_pos())
+                    Render.draw_distance(distance, ent.head_pos2d["x"] + center + 8, ent.head_pos2d["y"] - center / 2, pm.get_color("#00FFFF"))
                     
             pm.end_drawing()
