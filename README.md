@@ -8,4 +8,4 @@ CS2外部作弊，使用Python编写
 2. 运行Main.py
 
 ### 效果图
-![展示](Images/QQ_1730797285474.png)
+![展示](Images/QQ_1730871673948.png)
