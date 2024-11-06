@@ -1,15 +1,15 @@
 import threading
 
-from ESP import Esp
+from Cheat import Cheat
 import gui
 
-esp = Esp()
+cheat = Cheat()
 
 gui_thread = threading.Thread(target=gui.render)
-esp_thread = threading.Thread(target=esp.run)
+cheat_thread = threading.Thread(target=cheat.run)
 
 gui_thread.start()
-esp_thread.start()
+cheat_thread.start()
 
 gui_thread.join()
-esp_thread.join()
+cheat_thread.join()

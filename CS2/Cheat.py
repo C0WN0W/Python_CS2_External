@@ -1,8 +1,10 @@
 import math
+import ctypes
 
 import Utils
 import Configs as cfg
 
+user32 = ctypes.windll.user32
 pm = Utils.get_pyMeow()
 rq = Utils.get_requests()
 
@@ -53,6 +55,8 @@ weapon_names = {
         59: "t_knife"
     }
 
+AimKey = 0x01
+
 class Offsets:
     m_pBoneArray = 496
 
@@ -67,8 +71,6 @@ class Colors:
 
 
 class Entity:
-
-    
 
     def __init__(self, ptr, pawn_ptr, proc):
         self.ptr = ptr
@@ -152,7 +154,68 @@ class Render:
             pm.draw_text(f"{weaponName}", PosX + 1, PosY + 1, 15, Colors.black)  # Shadow
             pm.draw_text(f"{weaponName}", PosX, PosY, 15, Color)
 
-class Esp:
+class Aimbot:
+    def run(viewAngle, localPos, AimPos, viewMatrix):
+        smooth = 3
+        AimFov = 5
+
+        CenterX = pm.get_screen_width() / 2
+        CenterY = pm.get_screen_height() / 2
+        OppPos = pm.vec3_subtract(AimPos, localPos)
+        Distance = math.sqrt(math.pow(OppPos["x"], 2) + math.pow(OppPos["y"], 2))
+        TargetX: int
+        TargetY: int
+
+        Yaw = viewAngle["y"] - CenterY
+        Pitch = viewAngle["x"] - CenterX
+        Norm = math.sqrt(math.pow(Yaw, 2) + math.pow(Pitch, 2))
+
+        Yaw = Yaw*2 - smooth + viewAngle["y"]
+        Pitch = Pitch*2 - smooth + viewAngle["x"]
+
+        ScreenPos = pm.world_to_screen(viewMatrix, AimPos, 1)
+
+        if Norm > AimFov:
+            if ScreenPos["x"] > CenterX:
+                TargetX = -(CenterX - ScreenPos["x"])
+                TargetX /= smooth
+                if TargetX + CenterX > CenterX * 2:
+                    TargetX = 0
+            if ScreenPos["x"] < CenterX:
+                TargetX = CenterX - ScreenPos["x"]
+                TargetX /= smooth
+                if TargetX + CenterX < 0:
+                    TargetX = 0
+
+            if ScreenPos["y"] != 0:
+                if ScreenPos["y"] > CenterY:
+                    TargetY = -(CenterY - ScreenPos["y"])
+                    TargetY /= smooth
+                    if TargetY + ScreenPos["y"] > CenterY * 2:
+                        TargetY = 0
+                if ScreenPos["y"] < CenterY:
+                    TargetY = ScreenPos["y"] - CenterY
+                    TargetY /= smooth
+                    if TargetY + ScreenPos["y"] < 0:
+                        TargetY = 0
+            
+            TargetX /= 10
+            TargetY /= 10
+            if math.fabs(TargetX) < 1:
+                if TargetX > 0:
+                    TargetX = 1
+                if TargetX < 0:
+                    TargetX = -1
+            if math.fabs(TargetY) < 1:
+                if TargetY > 0:
+                    TargetY = 1
+                if TargetY < 0:
+                    TargetY = -1
+
+            pm.mouse_move(int(TargetX), int(TargetY))
+
+
+class Cheat:
     def __init__(self):
         self.proc = pm.open_process("cs2.exe")
         self.mod = pm.get_module(self.proc, "client.dll")["base"]
@@ -172,6 +235,7 @@ class Esp:
             "m_bDormant": "CGameSceneNode",
             "m_flFlashDuration": "C_CSPlayerPawnBase",
             "m_pClippingWeapon": "C_CSPlayerPawnBase",
+            "m_angEyeAngles": "C_CSPlayerPawnBase",
 
             "m_AttributeManager": "C_EconEntity",
             "m_Item": "C_AttributeContainer",
@@ -231,4 +295,5 @@ class Esp:
                     distance = ent.get_distance(self.get_local_player_pos())
                     Render.draw_distance(distance, ent.head_pos2d["x"] + center + 8, ent.head_pos2d["y"] - center / 2, pm.get_color("#00FFFF"))
                     Render.draw_weapon(ent.get_weapon_name(), ent.head_pos2d["x"] + center + 8, ent.head_pos2d["y"] - center / 2 + 15, pm.get_color("#FF7700"))
+
             pm.end_drawing()
