@@ -17,7 +17,7 @@ checkbox_config_map1 = {
     }
 
 checkbox_config_map2 = {
-    "No Flash": ("MISC", "no_flash"),
+    "Recoil Control": ("MISC", "rcs"),
     }
 
 def checkbox_callback(sender, app_data, user_data):

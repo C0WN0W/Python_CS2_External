@@ -7,4 +7,4 @@ class ESP:
     show_weapon = False
 
 class MISC:
-    no_flash = False
+    rcs = False

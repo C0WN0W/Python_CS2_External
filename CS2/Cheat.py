@@ -3,10 +3,12 @@ import ctypes
 
 import Utils
 import Configs as cfg
+import RCS
 
 user32 = ctypes.windll.user32
 pm = Utils.get_pyMeow()
 rq = Utils.get_requests()
+rcs = RCS.RCS()
 
 weapon_names = { 
         1: "deagle", 
@@ -214,7 +216,6 @@ class Aimbot:
 
             pm.mouse_move(int(TargetX), int(TargetY))
 
-
 class Cheat:
     def __init__(self):
         self.proc = pm.open_process("cs2.exe")
@@ -235,7 +236,9 @@ class Cheat:
             "m_bDormant": "CGameSceneNode",
             "m_flFlashDuration": "C_CSPlayerPawnBase",
             "m_pClippingWeapon": "C_CSPlayerPawnBase",
+            "m_iShotsFired": "C_CSPlayerPawn",
             "m_angEyeAngles": "C_CSPlayerPawnBase",
+            "m_aimPunchAngle": "C_CSPlayerPawn",
 
             "m_AttributeManager": "C_EconEntity",
             "m_Item": "C_AttributeContainer",
@@ -297,3 +300,4 @@ class Cheat:
                     Render.draw_weapon(ent.get_weapon_name(), ent.head_pos2d["x"] + center + 8, ent.head_pos2d["y"] - center / 2 + 15, pm.get_color("#FF7700"))
 
             pm.end_drawing()
+            rcs.update()
