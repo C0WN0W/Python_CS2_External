@@ -147,14 +147,12 @@ class Render:
             pm.draw_rectangle_lines(PosX, PosY, width, height, color, 1.2)
     
     def draw_distance(distance, PosX, PosY, Color):
-        if cfg.ESP.show_distance:
-            pm.draw_text(f"{distance}m", PosX + 1, PosY + 1, 15, Colors.black)  # Shadow
-            pm.draw_text(f"{distance}m", PosX, PosY, 15, Color)
+        pm.draw_text(f"{distance}m", PosX + 1, PosY + 1, 15, Colors.black)  # Shadow
+        pm.draw_text(f"{distance}m", PosX, PosY, 15, Color)
 
     def draw_weapon(weaponName, PosX, PosY, Color):
-        if cfg.ESP.show_weapon:
-            pm.draw_text(f"{weaponName}", PosX + 1, PosY + 1, 15, Colors.black)  # Shadow
-            pm.draw_text(f"{weaponName}", PosX, PosY, 15, Color)
+        pm.draw_text(f"{weaponName}", PosX + 1, PosY + 1, 15, Colors.black)  # Shadow
+        pm.draw_text(f"{weaponName}", PosX, PosY, 15, Color)
 
 class Aimbot:
     def run(viewAngle, localPos, AimPos, viewMatrix):
@@ -294,10 +292,11 @@ class Cheat:
                                         ent.head_pos2d["y"] - center / 2, 
                                         4, 
                                         head + center / 2)
-                    
-                    distance = ent.get_distance(self.get_local_player_pos())
-                    Render.draw_distance(distance, ent.head_pos2d["x"] + center + 8, ent.head_pos2d["y"] - center / 2, pm.get_color("#00FFFF"))
-                    Render.draw_weapon(ent.get_weapon_name(), ent.head_pos2d["x"] + center + 8, ent.head_pos2d["y"] - center / 2 + 15, pm.get_color("#FF7700"))
+                    if cfg.ESP.show_distance:
+                        distance = ent.get_distance(self.get_local_player_pos())
+                        Render.draw_distance(distance, ent.head_pos2d["x"] + center + 8, ent.head_pos2d["y"] - center / 2, pm.get_color("#00FFFF"))
+                    if cfg.ESP.show_weapon:
+                        Render.draw_weapon(ent.get_weapon_name(), ent.head_pos2d["x"] + center + 8, ent.head_pos2d["y"] - center / 2 + 15, pm.get_color("#FF7700"))
 
             pm.end_drawing()
             rcs.update()
