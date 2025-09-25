@@ -1,11 +1,11 @@
 # Python CS2 External
 
-## 介绍
-CS2外部作弊，使用Python编写
+## Descripton
+CS2 External Cheat written in Python.
 
-## 如何使用
-1. 下载PyMeow库和requests库
-2. 运行Main.py
+## How to use
+1. download `PyMeow` and `requests` lib
+2. run `Main.py`
 
-### 效果图
-![展示](Images/QQ_1730871673948.png)
+### Preview
+![preview](Images/QQ_1730871673948.png)
